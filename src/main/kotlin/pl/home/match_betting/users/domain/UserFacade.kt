@@ -2,6 +2,7 @@ package pl.home.match_betting.users.domain
 
 import org.slf4j.LoggerFactory
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import pl.home.match_betting.auths.HashFacade
 import pl.home.match_betting.auths.JwtFacade
 import pl.home.match_betting.users.dto.exceptions.UserAlreadyExistsException
 import pl.home.match_betting.users.dto.exceptions.UserNotFoundException
@@ -13,7 +14,7 @@ import java.util.*
 
 class UserFacade(
     private val userRepository: UserRepository,
-    private val passwordEncoder: BCryptPasswordEncoder,
+    private val hashFacade: HashFacade,
     private val jwtFacade: JwtFacade) {
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
@@ -25,7 +26,7 @@ class UserFacade(
         val user = User(
             name = payload.name,
             login = payload.login,
-            password = passwordEncoder.encode(generatedPassword)
+            password = hashFacade.hashBCrypt(generatedPassword)
         )
 
         val savedUser: User = userRepository.save(user)
@@ -40,12 +41,8 @@ class UserFacade(
 
     fun loginUser(payload: LoginRequest): String {
         val user: User = findUserByLogin(payload.login)
-        logger.info(user.toString())
 
-        logger.info(user.password)
-        logger.info(passwordEncoder.encode(payload.password))
-//        if (!passwordEncoder.matches(payload.password, user.password)) throw UserUnauthorizedException()
-//        logger.info(passwordEncoder.matches(payload.password, user.password).toString())
+        if (!hashFacade.checkBCrypt(payload.password, user.password)) throw UserUnauthorizedException()
 
         return jwtFacade.createToken(user)
     }

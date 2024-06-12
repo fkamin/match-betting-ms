@@ -70,12 +70,12 @@ class SecurityConfig {
             authorize.anyRequest().authenticated()
         }
 
-        http.oauth2ResourceServer{ oauth2 ->
-            oauth2.jwt{ jwt ->
-                jwt.decoder(jwtDecoder())
-                    .jwtAuthenticationConverter(CustomAuthenticationConverter())
-            }
-        }
+//        http.oauth2ResourceServer{ oauth2 ->
+//            oauth2.jwt{ jwt ->
+//                jwt.decoder(jwtDecoder())
+//                    .jwtAuthenticationConverter(CustomAuthenticationConverter())
+//            }
+//        }
 
         return http.build()
     }
@@ -111,14 +111,14 @@ class SecurityConfig {
         return CorsFilter(corsConfigurationSource())
     }
 
-    internal class CustomAuthenticationConverter : Converter<Jwt, JwtAuthenticationToken> {
-        override fun convert(jwt: Jwt): JwtAuthenticationToken {
-            val userId: String = jwt.subject
-            val roles: List<GrantedAuthority> = jwt.getClaimAsStringList(ROLES_KEY_IN_JWT)
-                .map { SimpleGrantedAuthority("$ROLE_PREFIX$it") }
-            return JwtAuthenticationToken(jwt, roles, userId)
-        }
-    }
+//    internal class CustomAuthenticationConverter : Converter<Jwt, JwtAuthenticationToken> {
+//        override fun convert(jwt: Jwt): JwtAuthenticationToken {
+//            val userId: String = jwt.subject
+//            val roles: List<GrantedAuthority> = jwt.getClaimAsStringList(ROLES_KEY_IN_JWT)
+//                .map { SimpleGrantedAuthority("$ROLE_PREFIX$it") }
+//            return JwtAuthenticationToken(jwt, roles, userId)
+//        }
+//    }
 
     internal data class Endpoint(val method: HttpMethod, val pattern: String)
 }
