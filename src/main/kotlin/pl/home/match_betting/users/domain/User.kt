@@ -9,7 +9,7 @@ data class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    var id: Long,
+    var id: Long = 0L,
 
     var name: String,
     var login: String,
@@ -23,5 +23,5 @@ data class User(
 
     @OneToMany
     @JoinColumn(name = "bet_id")
-    var betList: List<Bet> = emptyList()
+    var betList: List<Bet> = emptyList(),
 )
