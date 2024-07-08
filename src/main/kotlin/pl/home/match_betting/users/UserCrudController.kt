@@ -1,5 +1,9 @@
 package pl.home.match_betting.users
 
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.annotation.CurrentSecurityContext
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -10,25 +14,19 @@ import pl.home.match_betting.users.dto.requests.CreateUserRequest
 import pl.home.match_betting.users.dto.requests.LoginRequest
 import pl.home.match_betting.users.dto.requests.UpdateUserPasswordRequest
 import pl.home.match_betting.users.dto.responses.NewUserResponse
+import pl.home.match_betting.users.dto.responses.UserDetailedResponse
 
 @RestController
 @RequestMapping("/match-betting/users")
 class UserCrudController(private val userFacade: UserFacade) {
 
-    @PostMapping("/register")
-    fun addUser(@RequestBody payload: CreateUserRequest): NewUserResponse {
-        return userFacade.generateUserAccount(payload)
-    }
-
-
-    @PostMapping("/login")
-    fun login(@RequestBody payload: LoginRequest): String {
-        return userFacade.loginUser(payload)
-    }
 
     @PutMapping("/change-password")
-    fun changePassword(@RequestBody payload: UpdateUserPasswordRequest): String {
-        return userFacade.changePassword(payload)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    fun changePassword(
+        @RequestBody payload: UpdateUserPasswordRequest,
+        @CurrentSecurityContext(expression = "authentication") authContext: Authentication): String {
+        return userFacade.changePassword(payload, authContext)
     }
 
 //    @PostMapping("/auth/logout")
@@ -36,4 +34,8 @@ class UserCrudController(private val userFacade: UserFacade) {
 //        return ResponseEntity.noContent().build()
 //    }
 
+    @GetMapping
+    fun getAllUsers(): List<UserDetailedResponse> {
+        return userFacade.getAllUsers()
+    }
 }
