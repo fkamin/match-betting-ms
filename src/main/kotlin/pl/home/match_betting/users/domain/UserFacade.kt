@@ -1,21 +1,22 @@
 package pl.home.match_betting.users.domain
 
 import org.slf4j.LoggerFactory
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.stereotype.Service
 import pl.home.match_betting.auths.HashFacade
-import pl.home.match_betting.auths.JwtFacade
 import pl.home.match_betting.users.dto.exceptions.UserAlreadyExistsException
 import pl.home.match_betting.users.dto.exceptions.UserNotFoundException
 import pl.home.match_betting.users.dto.exceptions.UserUnauthorizedException
 import pl.home.match_betting.users.dto.requests.CreateUserRequest
 import pl.home.match_betting.users.dto.requests.LoginRequest
+import pl.home.match_betting.users.dto.requests.UpdateUserPasswordRequest
 import pl.home.match_betting.users.dto.responses.NewUserResponse
 import java.util.*
 
+@Service
 class UserFacade(
     private val userRepository: UserRepository,
-    private val hashFacade: HashFacade,
-    private val jwtFacade: JwtFacade) {
+    private val hashFacade: HashFacade
+) {
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
@@ -44,7 +45,22 @@ class UserFacade(
 
         if (!hashFacade.checkBCrypt(payload.password, user.password)) throw UserUnauthorizedException()
 
-        return jwtFacade.createToken(user)
+        return "Zalogowano"
+    }
+
+    fun changePassword(payload: UpdateUserPasswordRequest): String {
+        // TODO weryfikacja uzytkownika poprzez przyszłą autoryzacje
+        val user: User = findUserByLogin(payload.login)
+
+        if (!hashFacade.checkBCrypt(payload.currentPassword, user.password)) throw UserUnauthorizedException()
+
+        // TODO weryfikacja nowego hasła
+        user.password = hashFacade.hashBCrypt(payload.newPassword)
+
+        // TODO zmiana return na cos w stylu UserDetailedReponse
+        userRepository.save(user)
+
+        return "Pomyslnie zmieniono haslo"
     }
 
     private fun findUserByLogin(login: String): User = userRepository.findUserByLogin(login).orElseThrow{ UserNotFoundException() }
