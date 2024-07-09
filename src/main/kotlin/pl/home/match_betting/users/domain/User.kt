@@ -34,7 +34,7 @@ data class User(
     }
 
     override fun getUsername(): String {
-        return name
+        return login
     }
 
     override fun getPassword(): String {

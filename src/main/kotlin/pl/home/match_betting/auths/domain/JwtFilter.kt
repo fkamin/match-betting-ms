@@ -1,9 +1,9 @@
-package pl.home.match_betting.auths
+package pl.home.match_betting.auths.domain
 
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.slf4j.LoggerFactory
+import org.springframework.lang.NonNull
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
@@ -17,11 +17,10 @@ class JwtFilter(
     private val jwtFacade: JwtFacade,
     private val userDetailsService: UserDetailsService): OncePerRequestFilter() {
 
-    private val logger = LoggerFactory.getLogger(this.javaClass)
     override fun doFilterInternal(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        filterChain: FilterChain
+        @NonNull request: HttpServletRequest,
+        @NonNull response: HttpServletResponse,
+        @NonNull filterChain: FilterChain
     ) {
         val authHeader: String? = request.getHeader("Authentication")
 
@@ -34,7 +33,7 @@ class JwtFilter(
         val userLogin: String = jwtFacade.extractUserLogin(jwt)
 
         if (userLogin != null && SecurityContextHolder.getContext().authentication == null) {
-            val userDetails: UserDetails = this.userDetailsService.loadUserByUsername(userLogin)
+            val userDetails: UserDetails = userDetailsService.loadUserByUsername(userLogin)
             if (jwtFacade.isTokenValid(jwt, userDetails)) {
                 val authToken = UsernamePasswordAuthenticationToken(
                     userDetails, null, userDetails.authorities

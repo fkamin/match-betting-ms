@@ -7,5 +7,7 @@ import org.springframework.boot.runApplication
 class MatchBettingApplication
 
 fun main(args: Array<String>) {
-	runApplication<MatchBettingApplication>(*args)
+    runApplication<MatchBettingApplication>(*args)
 }
+
+
