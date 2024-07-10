@@ -7,10 +7,15 @@ import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.oauth2.jwt.JwtDecoder
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-
 import pl.home.match_betting.auths.domain.JwtFilter
+import pl.home.match_betting.users.domain.Role
+import javax.crypto.SecretKey
+import javax.crypto.spec.SecretKeySpec
+
 
 @Configuration
 @EnableWebSecurity
@@ -39,7 +44,8 @@ class SecurityConfig(
     )
 
     private val PUBLIC_ENDPOINTS = arrayOf(
-        Endpoint(HttpMethod.POST, "/match-betting/auth/**")
+        Endpoint(HttpMethod.POST, "/match-betting/auth/**"),
+//        Endpoint(HttpMethod.GET, "/match-betting/admin")
     )
 
     @Bean
@@ -57,6 +63,7 @@ class SecurityConfig(
             PUBLIC_ENDPOINTS.forEach { endpoint ->
                 authorize.requestMatchers(endpoint.method, endpoint.pattern).permitAll()
             }
+//            authorize.requestMatchers("/match-betting/admin").hasRole(Role.ADMIN.name)
             authorize.anyRequest().authenticated()
         }
 

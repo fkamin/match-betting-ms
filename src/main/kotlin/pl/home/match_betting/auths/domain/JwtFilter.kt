@@ -22,7 +22,7 @@ class JwtFilter(
         @NonNull response: HttpServletResponse,
         @NonNull filterChain: FilterChain
     ) {
-        val authHeader: String? = request.getHeader("Authentication")
+        val authHeader: String? = request.getHeader("Authorization")
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response)
@@ -31,6 +31,7 @@ class JwtFilter(
 
         val jwt: String = authHeader.substring(7)
         val userLogin: String = jwtFacade.extractUserLogin(jwt)
+        logger.info(userLogin)
 
         if (userLogin != null && SecurityContextHolder.getContext().authentication == null) {
             val userDetails: UserDetails = userDetailsService.loadUserByUsername(userLogin)

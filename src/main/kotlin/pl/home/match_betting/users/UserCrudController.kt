@@ -31,10 +31,6 @@ class UserCrudController(private val userFacade: UserFacade) {
         return userFacade.changePassword(userId, payload, authContext)
     }
 
-//    @PostMapping("/auth/logout")
-//    fun logout(@RequestBody payload: LoginRequest): ResponseEntity<Unit> {
-//        return ResponseEntity.noContent().build()
-//    }
 
     @GetMapping
     fun getAllUsers(): List<UserDetailedResponse> {

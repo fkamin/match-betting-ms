@@ -50,9 +50,7 @@ data class AuthFacade(
         val user: User = findUserByLogin(loginRequest.login)
         val jwtToken: String = jwtFacade.generateToken(user)
 
-//        logger.info(jwtToken)
-
-        return AuthenticationResponse(token = jwtToken)
+        return AuthenticationResponse(jwtToken)
     }
 
     private fun generatePassword(): String = UUID.randomUUID().toString().replace("-", "").substring(0, 8)
