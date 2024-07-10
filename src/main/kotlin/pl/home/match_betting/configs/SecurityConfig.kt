@@ -40,7 +40,7 @@ class SecurityConfig(
     )
 
     private val PUBLIC_ENDPOINTS = arrayOf(
-        Endpoint(HttpMethod.POST, "/match-betting/auth/**"),
+        Endpoint(HttpMethod.POST, "/match-betting/auth/login"),
     )
 
     @Bean

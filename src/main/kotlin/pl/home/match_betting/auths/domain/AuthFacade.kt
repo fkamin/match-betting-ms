@@ -15,7 +15,6 @@ import pl.home.match_betting.users.dto.requests.CreateUserRequest
 import pl.home.match_betting.users.dto.requests.LoginRequest
 import pl.home.match_betting.users.dto.responses.NewUserResponse
 import java.util.*
-import kotlin.collections.HashMap
 
 @Service
 data class AuthFacade(
@@ -49,7 +48,11 @@ data class AuthFacade(
         )
 
         val user: User = findUserByLogin(loginRequest.login)
-        val jwtToken: String = jwtFacade.generateToken(mapOf(Pair("role", Role.ADMIN.name)), user)
+        val jwtToken: String = jwtFacade.generateToken(
+            mapOf(
+                Pair("id", user.id),
+                Pair("role", user.role)
+            ), user)
 
         return AuthenticationResponse(jwtToken)
     }

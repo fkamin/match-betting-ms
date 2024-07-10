@@ -14,10 +14,10 @@ import pl.home.match_betting.users.dto.exceptions.UserNotFoundException
 
 @Configuration
 class AppConfig(private val userRepository: UserRepository) {
-    
+
     @Bean
     fun userDetailsService(): UserDetailsService {
-        return UserDetailsService { userLogin -> userRepository.findUserByLogin(userLogin).orElseThrow { UserNotFoundException() } }
+        return UserDetailsService { username -> userRepository.findUserByLogin(username).orElseThrow { UserNotFoundException() } }
     }
 
     @Bean

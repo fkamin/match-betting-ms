@@ -3,13 +3,13 @@ package pl.home.match_betting.auths.domain
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.io.Decoders
-import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.Keys
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import java.util.*
 import javax.crypto.SecretKey
-import kotlin.collections.HashMap
 
 @Service
 class JwtFacade {
@@ -19,6 +19,8 @@ class JwtFacade {
 
     @Value("\${jwt.signing.key}")
     private val jwtSigningKey: String = ""
+
+    private val logger = LoggerFactory.getLogger(this.javaClass)
 
     fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T {
         val claims: Claims = extractAllClaims(token)
@@ -32,8 +34,6 @@ class JwtFacade {
             .parseSignedClaims(token)
             .payload
     }
-
-    fun generateToken(userDetails: UserDetails): String = buildToken(HashMap(), userDetails)
 
     fun generateToken(extraClaims: Map<String, Any>, userDetails: UserDetails): String = buildToken(extraClaims, userDetails)
 
@@ -52,11 +52,11 @@ class JwtFacade {
     }
 
     fun isTokenValid(token: String, userDetails: UserDetails): Boolean {
-        val username: String = extractUserLogin(token)
-        return username == userDetails.username && !isTokenExpired(token)
+        val userName: String = extractUserName(token)
+        return userName == userDetails.username && !isTokenExpired(token)
     }
 
-    fun extractUserLogin(token: String): String {
+    fun extractUserName(token: String): String {
         return extractClaim(token, Claims::getSubject)
     }
 

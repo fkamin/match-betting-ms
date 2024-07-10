@@ -1,5 +1,7 @@
 package pl.home.match_betting.users.domain
 
+import org.slf4j.LoggerFactory
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -15,7 +17,9 @@ class UserFacade(
     private val securityHelper: SecurityHelper,
     private val passwordEncoder: PasswordEncoder) {
 
-    fun changePassword(userId: String, payload: UpdateUserPasswordRequest, authContext: Authentication): String {
+    private val logger = LoggerFactory.getLogger(this.javaClass)
+
+    fun changePassword(userId: String, payload: UpdateUserPasswordRequest, authContext: Authentication): ResponseEntity<String> {
         val user: User = findUserById(userId)
         securityHelper.assertUserIsAuthorizedForResource(authContext, user.id.toString())
 
@@ -24,15 +28,11 @@ class UserFacade(
 
         userRepository.save(user)
 
-        // TODO zmiana return na cos w stylu UserDetailedReponse
-        return "Pomyslnie zmieniono haslo"
+       // TODO zmiana return na cos w stylu UserDetailedReponse
+        return ResponseEntity.ok("Pomyslnie zmieniono haslo")
     }
 
-    private fun findUserByLogin(login: String): User = userRepository.findUserByLogin(login).orElseThrow{ UserNotFoundException() }
-
-    private fun findUserById(id: String): User = userRepository.findById(id.toLong()).orElseThrow{ UserNotFoundException() }
-
-    fun getAllUsers(): List<UserDetailedResponse> {
-        return userRepository.findAll().map { user -> user.toDetailedResponse() }
-    }
+    fun findUserById(id: String): User = userRepository.findById(id.toLong()).orElseThrow{ UserNotFoundException() }
 }
+
+

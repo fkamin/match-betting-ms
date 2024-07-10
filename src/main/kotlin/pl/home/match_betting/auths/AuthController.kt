@@ -1,6 +1,7 @@
 package pl.home.match_betting.auths
 
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,6 +17,7 @@ import pl.home.match_betting.users.dto.responses.NewUserResponse
 data class AuthController(private val authFacade: AuthFacade) {
 
     @PostMapping("/register")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     fun register(@RequestBody createUserRequest: CreateUserRequest): NewUserResponse {
         return authFacade.register(createUserRequest)
     }
