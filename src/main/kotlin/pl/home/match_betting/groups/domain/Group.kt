@@ -1,5 +1,6 @@
 package pl.home.match_betting.groups.domain
 
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
 import pl.home.match_betting.teams.domain.Team
 
@@ -13,7 +14,7 @@ data class Group(
 
     var name: String = "",
 
-    @OneToMany
-    @JoinColumn(name = "team_id")
+    @JsonManagedReference
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "group", cascade = [CascadeType.ALL])
     var teams: List<Team> = emptyList()
 )
