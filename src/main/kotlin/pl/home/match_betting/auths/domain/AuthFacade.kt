@@ -5,7 +5,6 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import pl.home.match_betting.auths.JwtFacade
 import pl.home.match_betting.auths.dto.responses.AuthenticationResponse
 import pl.home.match_betting.users.domain.Role
 import pl.home.match_betting.users.domain.User
@@ -16,7 +15,6 @@ import pl.home.match_betting.users.dto.requests.CreateUserRequest
 import pl.home.match_betting.users.dto.requests.LoginRequest
 import pl.home.match_betting.users.dto.responses.NewUserResponse
 import java.util.*
-import kotlin.math.log
 
 @Service
 data class AuthFacade(
@@ -52,9 +50,7 @@ data class AuthFacade(
         val user: User = findUserByLogin(loginRequest.login)
         val jwtToken: String = jwtFacade.generateToken(user)
 
-        logger.info(jwtToken)
-
-        return AuthenticationResponse(token = jwtToken)
+        return AuthenticationResponse(jwtToken)
     }
 
     private fun generatePassword(): String = UUID.randomUUID().toString().replace("-", "").substring(0, 8)

@@ -17,7 +17,7 @@ class AppConfig(private val userRepository: UserRepository) {
     
     @Bean
     fun userDetailsService(): UserDetailsService {
-        return UserDetailsService { login -> userRepository.findUserByLogin(login).orElseThrow { UserNotFoundException() } }
+        return UserDetailsService { userLogin -> userRepository.findUserByLogin(userLogin).orElseThrow { UserNotFoundException() } }
     }
 
     @Bean
@@ -34,7 +34,5 @@ class AppConfig(private val userRepository: UserRepository) {
     }
 
     @Bean
-    fun passwordEncoder(): PasswordEncoder {
-        return BCryptPasswordEncoder()
-    }
+    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 }

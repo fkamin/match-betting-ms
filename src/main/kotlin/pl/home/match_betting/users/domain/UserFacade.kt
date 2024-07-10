@@ -15,8 +15,8 @@ class UserFacade(
     private val securityHelper: SecurityHelper,
     private val passwordEncoder: PasswordEncoder) {
 
-    fun changePassword(payload: UpdateUserPasswordRequest, authContext: Authentication): String {
-        val user: User = findUserByLogin(payload.login)
+    fun changePassword(userId: String, payload: UpdateUserPasswordRequest, authContext: Authentication): String {
+        val user: User = findUserById(userId)
         securityHelper.assertUserIsAuthorizedForResource(authContext, user.id.toString())
 
         // TODO weryfikacja nowego hasła
@@ -29,6 +29,8 @@ class UserFacade(
     }
 
     private fun findUserByLogin(login: String): User = userRepository.findUserByLogin(login).orElseThrow{ UserNotFoundException() }
+
+    private fun findUserById(id: String): User = userRepository.findById(id.toLong()).orElseThrow{ UserNotFoundException() }
 
     fun getAllUsers(): List<UserDetailedResponse> {
         return userRepository.findAll().map { user -> user.toDetailedResponse() }
