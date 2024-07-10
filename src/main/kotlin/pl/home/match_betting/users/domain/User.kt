@@ -30,7 +30,7 @@ data class User(
     @JoinColumn(name = "bet_id")
     var betList: List<Bet> = emptyList()
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
-        return arrayListOf(SimpleGrantedAuthority(role.name))
+        return arrayListOf(SimpleGrantedAuthority("ROLE_${role.name}"))
     }
 
     override fun getUsername(): String {

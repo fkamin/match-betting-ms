@@ -33,9 +33,7 @@ class JwtFacade {
             .payload
     }
 
-    fun generateToken(userDetails: UserDetails): String {
-        return buildToken(HashMap(), userDetails)
-    }
+    fun generateToken(userDetails: UserDetails): String = buildToken(HashMap(), userDetails)
 
     fun generateToken(extraClaims: Map<String, Any>, userDetails: UserDetails): String = buildToken(extraClaims, userDetails)
 
