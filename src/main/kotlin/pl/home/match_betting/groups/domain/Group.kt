@@ -13,7 +13,7 @@ data class Group(
     @Column(nullable = false, unique = true)
     var name: String = "",
 
-    @OneToMany(mappedBy = "group", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JsonIgnore
-    var teams: List<Team> = emptyList()
+    @OneToMany(mappedBy = "group", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    var teams: MutableList<Team> = mutableListOf()
 )

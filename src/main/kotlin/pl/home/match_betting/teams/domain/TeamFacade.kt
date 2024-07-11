@@ -10,15 +10,19 @@ import pl.home.match_betting.teams.dto.requests.TeamCreationRequest
 import pl.home.match_betting.teams.dto.requests.TeamUpdateRequest
 import pl.home.match_betting.teams.dto.responses.TeamDetailedResponse
 import pl.home.match_betting.teams.dto.responses.toDetailedResponse
+import pl.home.match_betting.tournaments.domain.TournamentFacade
+import pl.home.match_betting.tournaments.dto.exceptions.TournamentIsNotInCreationStageException
 
 @Service
 class TeamFacade(
     private val teamRepository: TeamRepository,
-    private val groupRepository: GroupRepository) {
+    private val groupRepository: GroupRepository,
+    private val tournamentFacade: TournamentFacade) {
 
-    fun create(groupId: String, teamCreationRequest: TeamCreationRequest): TeamDetailedResponse {
-        if (teamRepository.existsByName(teamCreationRequest.name)) throw TeamAlreadyExistsException()
+    fun create(tournamentId: String, groupId: String, teamCreationRequest: TeamCreationRequest): TeamDetailedResponse {
+        if (!tournamentFacade.isTournamentInCreationStage(tournamentId)) throw TournamentIsNotInCreationStageException()
         if (!groupRepository.existsById(groupId.toLong())) throw GroupDoesNotExistsException()
+        if (teamRepository.existsByName(teamCreationRequest.name)) throw TeamAlreadyExistsException()
 
         val team = Team(
             name = teamCreationRequest.name,
@@ -33,12 +37,13 @@ class TeamFacade(
         return teamRepository.findAllByGroup(group).map { it.toDetailedResponse() }
     }
 
-    fun findTeam(groupId: String, teamId: String): TeamDetailedResponse {
+    fun findTeamDetails(groupId: String, teamId: String): TeamDetailedResponse {
         val group: Group = findGroupById(groupId)
         return teamRepository.findByIdAndGroup(teamId.toLong(), group).orElseThrow { TeamDoesNotExistsException() }.toDetailedResponse()
     }
 
-    fun update(groupId: String, teamId: String, teamUpdateRequest: TeamUpdateRequest): TeamDetailedResponse {
+    fun update(tournamentId: String, groupId: String, teamId: String, teamUpdateRequest: TeamUpdateRequest): TeamDetailedResponse {
+        if (!tournamentFacade.isTournamentInCreationStage(teamId)) throw TournamentIsNotInCreationStageException()
         val team: Team = findTeamByIdAndGroup(teamId, groupId)
 
         team.name = teamUpdateRequest.name

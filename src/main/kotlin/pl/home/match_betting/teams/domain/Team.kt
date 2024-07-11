@@ -13,8 +13,7 @@ data class Team(
     @Column(nullable = false, unique = true)
     var name: String,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id")
-    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY) @JsonIgnore
+    @JoinColumn(name = "group_id", nullable = false)
     var group: Group,
 )

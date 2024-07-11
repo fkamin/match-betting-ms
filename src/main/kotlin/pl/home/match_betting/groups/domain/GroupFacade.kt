@@ -7,11 +7,17 @@ import pl.home.match_betting.groups.dto.requests.GroupCreationRequest
 import pl.home.match_betting.groups.dto.requests.GroupUpdateRequest
 import pl.home.match_betting.groups.dto.responses.GroupDetailedResponse
 import pl.home.match_betting.groups.dto.responses.toDetailedResponse
+import pl.home.match_betting.tournaments.domain.Tournament
+import pl.home.match_betting.tournaments.domain.TournamentFacade
+import pl.home.match_betting.tournaments.dto.exceptions.TournamentIsNotInCreationStageException
 
 @Service
 class GroupFacade(
-    private val groupRepository: GroupRepository) {
-    fun create(groupCreationRequest: GroupCreationRequest): GroupDetailedResponse {
+    private val groupRepository: GroupRepository,
+    private val tournamentFacade: TournamentFacade) {
+    fun create(tournamentId: String, groupCreationRequest: GroupCreationRequest): GroupDetailedResponse {
+        if (!tournamentFacade.isTournamentInCreationStage(tournamentId)) throw TournamentIsNotInCreationStageException()
+
         if (groupRepository.existsByName(groupCreationRequest.name)) throw GroupAlreadyExistsException()
 
         val group = Group(name = groupCreationRequest.name)
@@ -21,21 +27,22 @@ class GroupFacade(
 
     fun findGroups(): List<GroupDetailedResponse> = groupRepository.findAll().map { it.toDetailedResponse() }
 
-    fun findGroupById(groupId: String): GroupDetailedResponse {
-        val group: Group = findById(groupId)
-        return group.toDetailedResponse()
-    }
+    fun findGroupDetails(groupId: String): GroupDetailedResponse = findGroupById(groupId).toDetailedResponse()
 
-    private fun findById(groupId: String): Group = groupRepository.findById(groupId.toLong()).orElseThrow { GroupDoesNotExistsException() }
+    fun update(tournamentId: String, groupId: String, groupUpdateRequest: GroupUpdateRequest): GroupDetailedResponse {
+        if (!tournamentFacade.isTournamentInCreationStage(tournamentId)) throw TournamentIsNotInCreationStageException()
 
-    fun update(groupId: String, groupUpdateRequest: GroupUpdateRequest): GroupDetailedResponse {
-        val group: Group = findById(groupId)
+        val group: Group = findGroupById(groupId)
 
         group.name = groupUpdateRequest.name
 
         return groupRepository.save(group).toDetailedResponse()
     }
 
-    fun delete(groupId: String): Unit = groupRepository.delete(findById(groupId))
+    fun delete(tournamentId: String, groupId: String) {
+        if (!tournamentFacade.isTournamentInCreationStage(tournamentId)) throw TournamentIsNotInCreationStageException()
+        groupRepository.delete(findGroupById(groupId))
+    }
 
+    private fun findGroupById(groupId: String): Group = groupRepository.findById(groupId.toLong()).orElseThrow { GroupDoesNotExistsException() }
 }

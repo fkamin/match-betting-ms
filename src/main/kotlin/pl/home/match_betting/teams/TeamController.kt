@@ -16,38 +16,43 @@ import pl.home.match_betting.teams.dto.requests.TeamUpdateRequest
 import pl.home.match_betting.teams.dto.responses.TeamDetailedResponse
 
 @RestController
-@RequestMapping("/match-betting/groups")
+@RequestMapping("/match-betting/tournaments")
 class TeamController(private val teamFacade: TeamFacade) {
 
-    @PostMapping("/{groupId}/teams")
+    @PostMapping("/{tournamentId}/groups/{groupId}/teams")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     fun addTeam(
+        @PathVariable tournamentId: String,
         @PathVariable groupId: String,
-        @RequestBody teamCreationRequest: TeamCreationRequest): ResponseEntity<TeamDetailedResponse> {
-        return ResponseEntity.ok(teamFacade.create(groupId, teamCreationRequest))
+        @RequestBody teamCreationRequest: TeamCreationRequest): TeamDetailedResponse {
+        return teamFacade.create(tournamentId, groupId, teamCreationRequest)
     }
 
-    @GetMapping("/{groupId}/teams")
+    @GetMapping("/{tournamentId}/groups/{groupId}/teams")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    fun getTeams(@PathVariable groupId: String): ResponseEntity<List<TeamDetailedResponse>> {
-        return ResponseEntity.ok(teamFacade.findTeams(groupId))
+    fun getTeams(
+        @PathVariable tournamentId: String,
+        @PathVariable groupId: String): List<TeamDetailedResponse> {
+        return teamFacade.findTeams(groupId)
     }
 
-    @GetMapping("/{groupId}/teams/{teamId}")
+    @GetMapping("/{tournamentId}/groups/{groupId}/teams/{teamId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     fun getTeam(
+        @PathVariable tournamentId: String,
         @PathVariable groupId: String,
-        @PathVariable teamId: String): ResponseEntity<TeamDetailedResponse> {
-        return ResponseEntity.ok(teamFacade.findTeam(groupId, teamId))
+        @PathVariable teamId: String): TeamDetailedResponse {
+        return teamFacade.findTeamDetails(groupId, teamId)
     }
 
-    @PutMapping("/{groupId}/teams/{teamId}")
+    @PutMapping("/{tournamentId}/groups/{groupId}/teams/{teamId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     fun update(
+        @PathVariable tournamentId: String,
         @PathVariable groupId: String,
         @PathVariable teamId: String,
-        @RequestBody teamUpdateRequest: TeamUpdateRequest): ResponseEntity<TeamDetailedResponse> {
-        return ResponseEntity.ok(teamFacade.update(groupId, teamId, teamUpdateRequest))
+        @RequestBody teamUpdateRequest: TeamUpdateRequest): TeamDetailedResponse {
+        return teamFacade.update(tournamentId, groupId, teamId, teamUpdateRequest)
     }
 
     @DeleteMapping("/{groupId}/teams/{teamId}")
