@@ -16,40 +16,47 @@ import pl.home.match_betting.groups.dto.requests.GroupUpdateRequest
 import pl.home.match_betting.groups.dto.responses.GroupDetailedResponse
 
 @RestController
-@RequestMapping("/match-betting/groups")
+@RequestMapping("/match-betting/tournaments")
 class GroupController(
     private val groupFacade: GroupFacade) {
 
-    @PostMapping
+    @PostMapping("/{tournamentId}/groups")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    fun addGroup(@RequestBody groupCreationRequest: GroupCreationRequest): ResponseEntity<GroupDetailedResponse> {
-        return ResponseEntity.ok(groupFacade.create(groupCreationRequest))
+    fun addGroup(
+        @PathVariable tournamentId: String,
+        @RequestBody groupCreationRequest: GroupCreationRequest): GroupDetailedResponse {
+        return groupFacade.create(tournamentId, groupCreationRequest)
     }
 
-    @GetMapping
+    @GetMapping("/{tournamentId}/groups")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    fun getGroups(): ResponseEntity<List<GroupDetailedResponse>> {
-        return ResponseEntity.ok(groupFacade.findGroups())
+    fun getGroups(@PathVariable tournamentId: String): List<GroupDetailedResponse> {
+        return groupFacade.findGroups()
     }
 
-    @GetMapping("/{groupId}")
+    @GetMapping("/{tournamentId}/groups/{groupId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    fun getGroup(@PathVariable groupId: String): ResponseEntity<GroupDetailedResponse> {
-        return ResponseEntity.ok(groupFacade.findGroupById(groupId))
+    fun getGroup(
+        @PathVariable tournamentId: String,
+        @PathVariable groupId: String): GroupDetailedResponse {
+        return groupFacade.findGroupDetails(groupId)
     }
 
-    @PutMapping("/{groupId}")
+    @PutMapping("/{tournamentId}/groups/{groupId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     fun updateGroup(
+        @PathVariable tournamentId: String,
         @PathVariable groupId: String,
-        @RequestBody groupUpdateRequest: GroupUpdateRequest): ResponseEntity<GroupDetailedResponse> {
-        return ResponseEntity.ok(groupFacade.update(groupId, groupUpdateRequest))
+        @RequestBody groupUpdateRequest: GroupUpdateRequest): GroupDetailedResponse {
+        return groupFacade.update(tournamentId, groupId, groupUpdateRequest)
     }
 
-    @DeleteMapping("/{groupId}")
+    @DeleteMapping("/{tournamentId}/groups/{groupId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    fun deleteGroup(@PathVariable groupId: String): ResponseEntity<Unit> {
-        groupFacade.delete(groupId)
+    fun deleteGroup(
+        @PathVariable tournamentId: String,
+        @PathVariable groupId: String): ResponseEntity<Unit> {
+        groupFacade.delete(tournamentId, groupId)
         return ResponseEntity.noContent().build()
     }
 

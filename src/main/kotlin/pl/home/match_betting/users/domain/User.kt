@@ -1,10 +1,12 @@
 package pl.home.match_betting.users.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import pl.home.match_betting.bets.domain.Bet
+import pl.home.match_betting.matches.domain.TeamChoice
 
 @Entity
 @Table(name = "users")
@@ -27,10 +29,15 @@ data class User(
     @Column(name = "total_points")
     var totalPoints: Int = 0,
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    var bets: List<Bet> = emptyList()
+    var bets: MutableList<Bet> = mutableListOf()
 
 ) : UserDetails {
+
+    fun increasePoints(points: Int) {
+        totalPoints += points
+    }
 
     override fun getAuthorities():
             MutableCollection<out GrantedAuthority> = arrayListOf(SimpleGrantedAuthority("ROLE_${role.name}"))
