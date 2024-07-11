@@ -9,36 +9,34 @@ import pl.home.match_betting.bets.domain.Bet
 @Entity
 @Table(name = "users")
 data class User(
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long = 0L,
+
+    @Column(nullable = false)
     var name: String,
+
+    @Column(nullable = false, unique = true)
     var login: String,
 
-    @Column(name = "password")
+    @Column(nullable = false, name = "password")
     var encodedPassword: String,
 
-    @Enumerated(EnumType.STRING)
-    var role: Role
-) : UserDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    var id: Long = 0L
+    @Column(nullable = false) @Enumerated(EnumType.STRING)
+    var role: Role,
 
     @Column(name = "total_points")
-    var totalPoints: Int = 0
+    var totalPoints: Int = 0,
 
-    @OneToMany
-    @JoinColumn(name = "bet_id")
-    var betList: List<Bet> = emptyList()
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
-        return arrayListOf(SimpleGrantedAuthority("ROLE_${role.name}"))
-    }
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    var bets: List<Bet> = emptyList()
 
-    override fun getUsername(): String {
-        return login
-    }
+) : UserDetails {
 
-    override fun getPassword(): String {
-        return encodedPassword
-    }
+    override fun getAuthorities():
+            MutableCollection<out GrantedAuthority> = arrayListOf(SimpleGrantedAuthority("ROLE_${role.name}"))
+
+    override fun getUsername(): String = login
+
+    override fun getPassword(): String = encodedPassword
 
 }

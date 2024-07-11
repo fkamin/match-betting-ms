@@ -6,7 +6,7 @@ import pl.home.match_betting.users.domain.User
 data class UserDetailedResponse(
     val name: String,
     val totalPoints: Int,
-    val betList: List<Bet>
+    val bets: List<Bet>
 )
 
-fun User.toDetailedResponse(): UserDetailedResponse = UserDetailedResponse(name, totalPoints, betList)
+fun User.toDetailedResponse(): UserDetailedResponse = UserDetailedResponse(name, totalPoints, bets)

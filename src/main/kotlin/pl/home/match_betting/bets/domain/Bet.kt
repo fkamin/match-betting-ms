@@ -7,19 +7,27 @@ import pl.home.match_betting.users.domain.User
 @Entity
 @Table(name = "bets")
 data class Bet(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "bet_id")
-    var id: Long,
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long = 0L,
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    var userId: User,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    var user: User,
 
-    @ManyToOne
-    @JoinColumn(name = "match_id")
-    var matchId: Match,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "match_id", nullable = false)
+    var match: Match,
 
-    var scoreLeft: String,
-    var scoreRight: String
+    @Column(nullable = false)
+    var predictedLeftTeamScore: Int,
+
+    @Column(nullable = false)
+    var predictedRightTeamScore: Int,
+
+    @Column(nullable = false)
+    var isFinalStage: Boolean,
+
+    @Enumerated(EnumType.STRING)
+    @Column
+    var predictedWinner: TeamChoice
 )

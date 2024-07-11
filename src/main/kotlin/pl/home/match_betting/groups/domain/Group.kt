@@ -1,20 +1,19 @@
 package pl.home.match_betting.groups.domain
 
-import com.fasterxml.jackson.annotation.JsonManagedReference
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import pl.home.match_betting.teams.domain.Team
 
 @Entity
 @Table(name = "groups")
 data class Group(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "group_id")
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0L,
 
+    @Column(nullable = false, unique = true)
     var name: String = "",
 
-    @JsonManagedReference
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "group", cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "group", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @JsonIgnore
     var teams: List<Team> = emptyList()
 )

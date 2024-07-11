@@ -15,7 +15,14 @@ class UsersLoader(
 
     override fun run(args: ApplicationArguments?) {
         if (!userRepository.existsUserByLogin("admin")) {
-            userRepository.save(User("admin", "admin", passwordEncoder.encode("admin123"), Role.ADMIN))
+//            userRepository.save(User("admin", "admin", passwordEncoder.encode("admin123"), Role.ADMIN))
+            userRepository.save(
+                User(
+                    login = "admin",
+                    name = "admin",
+                    encodedPassword = passwordEncoder.encode("admin123"),
+                    role = Role.ADMIN
+                ))
         }
     }
 }
